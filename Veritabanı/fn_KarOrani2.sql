@@ -1,0 +1,36 @@
+
+
+
+
+
+
+create function fn_KarOrani2
+(
+	@UrunId int
+)
+returns decimal
+as
+begin
+
+	declare @TotalAlýþFiyatý money
+	declare @TotalSatýþFiyatý money
+	declare @KarOraný decimal
+	declare @TotalAdet int
+
+	set @TotalAlýþFiyatý = (select sum(AlisFiyati*Adet) from tbl_Urun where Id=@UrunId)
+	set @TotalSatýþFiyatý = (select sum(us.SatisFiyati*us.Adet) from tbl_Urun u, tbl_UrunStok us 
+	where u.Id=us.UrunId and u.Id=@UrunId)
+	set @TotalAdet = (select sum(us.Adet) from tbl_Urun u, tbl_UrunStok us 
+	where u.Id=us.UrunId and u.Id=@UrunId)
+
+	set @KarOraný = (@TotalSatýþFiyatý-@TotalAlýþFiyatý)*100/@TotalAlýþFiyatý
+
+	return @KarOraný
+end
+
+
+select dbo.fn_KarOrani2(11) as 'Kar Oraný'
+
+select sum(Adet) from tbl_Urun where Marka='a' and Ad='b'
+
+select * from tbl_Urun
